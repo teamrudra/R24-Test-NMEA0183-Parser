@@ -13,4 +13,7 @@ typedef enum {
   GPS_NO_FIX_TYPE,
 } gps_error_code_t;
 gps_error_code_t gps_update(gps_t gps_instance, const char* sentence, int len);
+gps_error_code_t gps_get_lat_lon(gps_t gps_instance, int* degmin, int* minfrac);
+gps_error_code_t gps_get_time(gps_t gps_instance, struct tm* time);
+gps_error_code_t gps_get_altitude(gps_t gps_instance, float* msl_metres);
 #endif
