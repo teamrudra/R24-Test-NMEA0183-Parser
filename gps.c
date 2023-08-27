@@ -2,7 +2,6 @@
 #include <string.h>
 #include "crc.h"
 #include <stdlib.h>
-#include <time.h>
 #include <stdint.h>
 
 enum {
@@ -29,6 +28,12 @@ struct gps_gga_t {
   float hdop;
   float altitude;
   float geoid_sep_metres;
+};
+struct gps_gll_t {
+  float lat;
+  float lon;
+  float time;
+  int flags;
 };
 struct gps_instance_t
 {};
@@ -106,6 +111,47 @@ gps_error_code_t parse_gga(const char* sentence, int len) {
     else if (fieldc == 10) {
       if (!empty_field)
         gga.geoid_sep_metres = strtod(sentence+i, NULL);
+    }
+    fieldc++;
+  }
+  return GPS_NO_ERROR;
+}
+gps_error_code_t parse_gll(const char* sentence, int len) {
+  int fieldc = 0;
+  struct gps_gll_t gll;
+  for (int i = 0, j = 0; i < len; i = j+1) {
+    j = next_field(sentence, len, i);
+    if (j == -1) j = len;
+    int empty_field = i == j;
+
+    if (fieldc == 1) {
+      // Latitude
+      if (!empty_field)
+        gll.lat = strtod(sentence+i, NULL);
+    }
+    else if (fieldc == 2) {
+      // Latitude direction
+      if (!empty_field && sentence[i] == 'S')
+        gll.flags &= 0b10;
+    }
+    else if (fieldc == 3) {
+      // Longitude
+      if (!empty_field)
+        gll.lon = strtod(sentence+i, NULL);
+    }
+    else if (fieldc == 4) {
+      // Longitude direction
+      if (!empty_field && sentence[i] == 'W')
+        gll.flags |= 0b01;
+    }
+    else if (fieldc == 5) {
+      // Time
+      if (empty_field) return GPS_NO_TIME;
+      gll.time = strtod(sentence+i, NULL);
+    }
+    else if (fieldc == 6) {
+      if (empty_field) return GPS_NO_FIX_TYPE;
+      gll.flags = (sentence[i] == 'A') << 3;
     }
     fieldc++;
   }

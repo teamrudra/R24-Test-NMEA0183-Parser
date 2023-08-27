@@ -1,5 +1,6 @@
 #ifndef GPS_H
 #define GPS_H
+#include <time.h>
 struct gps_instance_t;
 typedef struct gps_instance_t* gps_t;
 typedef enum {
@@ -8,6 +9,8 @@ typedef enum {
   GPS_UNKNOWN_PREFIX,
   GPS_UNIMPLEMENTED,
   GPS_PARSE_ERROR,
+  GPS_NO_TIME,
+  GPS_NO_FIX_TYPE,
 } gps_error_code_t;
 gps_error_code_t gps_update(gps_t gps_instance, const char* sentence, int len);
 #endif
