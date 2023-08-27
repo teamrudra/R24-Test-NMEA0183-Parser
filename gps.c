@@ -63,28 +63,32 @@ gps_error_code_t parse_gga(const char* sentence, int len) {
 
     if (fieldc == 1) {
       // Time
+      if (empty_field) return GPS_NO_TIME;
       strncpy(gga.time, sentence, 6);
     }
     else if (fieldc == 2) {
       // Latitude
-      gga.lat = strtod(sentence+i, NULL);
+      if (!empty_field)
+        gga.lat = strtod(sentence+i, NULL);
     }
     else if (fieldc == 3) {
       // Latitude direction
-      if (sentence[i] == 'S')
+      if (!empty_field && sentence[i] == 'S')
         gga.time[7] &= 0b10;
     }
     else if (fieldc == 4) {
       // Longitude
-      gga.lon = strtod(sentence+i, NULL);
+      if (!empty_field)
+        gga.lon = strtod(sentence+i, NULL);
     }
     else if (fieldc == 5) {
       // Longitude direction
-      if (sentence[i] == 'W')
+      if (!empty_field && sentence[i] == 'W')
         gga.time[7] |= 0b01;
     }
     else if (fieldc == 6) {
-      // Fix validity
+      // Type of fix
+      if (empty_field) return GPS_NO_FIX_TYPE;
       gga.time[7] |= (sentence[i] != '0') << 3;
     }
     else if (fieldc == 7) {
