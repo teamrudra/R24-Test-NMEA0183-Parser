@@ -25,6 +25,10 @@ struct gps_gga_t {
   float lat;
   float lon;
   char time[8];
+  int satc;
+  float hdop;
+  float altitude;
+  float geoid_sep_metres;
 };
 struct gps_instance_t
 {};
@@ -82,6 +86,22 @@ gps_error_code_t parse_gga(const char* sentence, int len) {
     else if (fieldc == 6) {
       // Fix validity
       gga.time[7] |= (sentence[i] != '0') << 3;
+    }
+    else if (fieldc == 7) {
+      if (!empty_field)
+        gga.satc = strtol(sentence+i, NULL, 10);
+    }
+    else if (fieldc == 8) {
+      if (!empty_field)
+        gga.hdop = strtod(sentence+i, NULL);
+    }
+    else if (fieldc == 9) {
+      if (!empty_field)
+        gga.altitude = strtod(sentence+i, NULL);
+    }
+    else if (fieldc == 10) {
+      if (!empty_field)
+        gga.geoid_sep_metres = strtod(sentence+i, NULL);
     }
     fieldc++;
   }
