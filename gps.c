@@ -16,9 +16,13 @@ enum {
 };
 const char* sentence_prefix[] = { "GGA", "GLL", "GSA", "GSV",
                                     "MSS", "RMC", "VTG" };
-gps_error_code_t parse_gga(const char* sentence, int len);
-gps_error_code_t (* const sentence_parsers[])(const char*, int) = {
+gps_error_code_t parse_gga(gps_t gps_instance, const char* sentence, int len);
+gps_error_code_t parse_gll(gps_t gps_instance, const char* sentence, int len);
+gps_error_code_t gga_get_lat_lon(int* degmin, int* minfrac);
+gps_error_code_t gll_get_lat_lon(int* degmin, int* minfrac);
+gps_error_code_t (* const sentence_parsers[])(gps_t, const char*, int) = {
   parse_gga,
+  parse_gll,
 };
 struct gps_gga_t {
   float lat;
@@ -28,15 +32,18 @@ struct gps_gga_t {
   float hdop;
   float altitude;
   float geoid_sep_metres;
-};
+} gga;
 struct gps_gll_t {
   float lat;
   float lon;
   float time;
   int flags;
-};
+} gll;
+
 struct gps_instance_t
-{};
+{
+  int last_msg_type;
+};
 
 int next_field(const char* sentence, int len, int offset) {
   for (int i = offset; i < len; i++) {
@@ -56,11 +63,26 @@ gps_error_code_t gps_update(gps_t gps_instance, const char* sentence, int len) {
   if (current_sentence == SENTENCE_UNKNOWN) {
     return GPS_UNKNOWN_PREFIX;
   }
-  return GPS_NO_ERROR;
+  
+  if (current_sentence == SENTENCE_GGA || current_sentence == SENTENCE_GLL)
+    return sentence_parsers[current_sentence](gps_instance, sentence, len);
+  else
+    return GPS_UNIMPLEMENTED;
 }
-gps_error_code_t parse_gga(const char* sentence, int len) {
+gps_error_code_t gps_get_lat_lon(gps_t gps_instance, int* degmin, int* minfrac) {
+  if (gps_instance->last_msg_type == SENTENCE_GGA) return gga_get_lat_lon(degmin, minfrac);
+  if (gps_instance->last_msg_type == SENTENCE_GLL) return gll_get_lat_lon(degmin, minfrac);
+  return GPS_UNIMPLEMENTED;
+}
+gps_error_code_t gps_get_time(gps_t gps_instance, struct tm* time) {
+  return GPS_UNIMPLEMENTED;
+}
+gps_error_code_t gps_get_altitude(gps_t gps_instance, float* msl_metres) {
+  return GPS_UNIMPLEMENTED;
+}
+gps_error_code_t parse_gga(gps_t gps_instance, const char* sentence, int len) {
+  gps_instance->last_msg_type = SENTENCE_GGA;
   int fieldc = 0;
-  struct gps_gga_t gga;
   for (int i = 0, j = 0; i < len; i = j+1) {
     j = next_field(sentence, len, i);
     if (j == -1) j = len;
@@ -116,9 +138,9 @@ gps_error_code_t parse_gga(const char* sentence, int len) {
   }
   return GPS_NO_ERROR;
 }
-gps_error_code_t parse_gll(const char* sentence, int len) {
+gps_error_code_t parse_gll(gps_t gps_instance, const char* sentence, int len) {
+  gps_instance->last_msg_type = SENTENCE_GLL;
   int fieldc = 0;
-  struct gps_gll_t gll;
   for (int i = 0, j = 0; i < len; i = j+1) {
     j = next_field(sentence, len, i);
     if (j == -1) j = len;
