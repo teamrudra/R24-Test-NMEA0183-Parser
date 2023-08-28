@@ -98,8 +98,10 @@ gps_error_code_t gga_get_lat_lon(int* degmin, int* minfrac) {
 }
 gps_error_code_t gps_get_geoid_sep(gps_t gps_instance, float* geoid_sep_metres) {
   if (gps_instance->last_msg_type == SENTENCE_GGA) {
-    gga.geoid_sep_metres;
+    *geoid_sep_metres = gga.geoid_sep_metres;
+    return GPS_NO_ERROR;
   }
+  else return GPS_UNIMPLEMENTED;
 }
 gps_error_code_t parse_gga(gps_t gps_instance, const char* sentence, int len) {
   gps_instance->last_msg_type = SENTENCE_GGA;
