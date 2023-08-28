@@ -2,6 +2,8 @@
 This repo contains the code for a NMEA0183 parser library.
 The `test` folder contains unit tests.
 
+NMEA0183 is a standard followed by GPS manufacturers which allows users to get data using a common format.
+
 ## Instructions
 1. Fork this repo
 2. Select an ISSUE to work on from the ISSUES section
