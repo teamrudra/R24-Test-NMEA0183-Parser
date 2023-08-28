@@ -26,7 +26,8 @@ void test_geoid_seperation(void) {
   TEST_ASSERT_EQUAL(GPS_NO_ERROR, gps_update(handle, examples[0], strlen(examples[0])));
   float geoid_sep;
   gps_get_geoid_sep(handle, &geoid_sep);
-  TEST_ASSERT_EQUAL(-34.2, geoid_sep);
+  const float correction = 0.001;
+  TEST_ASSERT_FLOAT_WITHIN(correction , -34.2, geoid_sep);
 }
 void test_gll_parsing_over_examples(void) {
   const char* examples[] = {
@@ -46,3 +47,8 @@ int main(void) {
   RUN_TEST(test_gll_parsing_over_examples);
   return UNITY_END();
 }
+
+/*
+DOCUMENTATION:
+The line 29 formerly TEST_ASSERT_EQUAL(-34.2, geoid_sep) compares only integer data type whereas it 
+had to compare float or double data types to a presision of 0.001 due to the error the code produced a wrong value. */
