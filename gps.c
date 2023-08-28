@@ -24,6 +24,7 @@ gps_error_code_t (* const sentence_parsers[])(gps_t, const char*, int) = {
   parse_gga,
   parse_gll,
 };
+
 struct gps_gga_t {
   float lat;
   float lon;
@@ -39,7 +40,92 @@ struct gps_gll_t {
   float time;
   int flags;
 } gll;
+enum SentenceType {
+    GGA,
+    GLL
+};
+enum SentenceType {
+    GGA,
+    GLL
+};
 
+// Determine the maximum size required for both sentence types
+#define MAX_SENTENCE_SIZE (sizeof(struct gps_gga_t) > sizeof(struct gps_gll_t) ? sizeof(struct gps_gga_t) : sizeof(struct gps_gll_t))
+
+// Function to parse a GGA sentence
+void parse_gga_sentence(const char* sentence, enum SentenceType type) {
+    void* sentence_data = malloc(MAX_SENTENCE_SIZE);
+
+    switch (type) {
+        case GGA: {
+            struct gps_gga_t* gga_data = (struct gps_gga_t*)sentence_data;
+            // Parse GGA sentence and populate gga_data
+            // ...
+            break;
+        }
+        case GLL: {
+            struct gps_gll_t* gll_data = (struct gps_gll_t*)sentence_data;
+            // Parse GLL sentence and populate gll_data
+            // ...
+            break;
+        }
+    }
+
+    // ... Rest of your parsing logic ...
+
+    // Free allocated memory when done
+    free(sentence_data);
+}
+
+int main() {
+    const char* gga_sentence = "$GPGGA,002153.000,3342.6618,N,11751.3858,W,1,10,1.2,27.0,M,-34.2,M,,0000*5E";
+    const char* gll_sentence = "$GPGLL,3342.6618,N,11751.3858,W,002153.000,A*2D";
+
+    // Assuming you can determine the sentence type based on its format
+    parse_gga_sentence(gga_sentence, GGA);
+    parse_gga_sentence(gll_sentence, GLL);
+
+    return 0;
+}
+
+// Determine the maximum size required for both sentence types
+#define MAX_SENTENCE_SIZE (sizeof(struct gps_gga_t) > sizeof(struct gps_gll_t) ? sizeof(struct gps_gga_t) : sizeof(struct gps_gll_t))
+
+// Function to parse a GGA sentence
+void parse_gga_sentence(const char* sentence, enum SentenceType type) {
+    void* sentence_data = malloc(MAX_SENTENCE_SIZE);
+
+    switch (type) {
+        case GGA: {
+            struct gps_gga_t* gga_data = (struct gps_gga_t*)sentence_data;
+            // Parse GGA sentence and populate gga_data
+            // ...
+            break;
+        }
+        case GLL: {
+            struct gps_gll_t* gll_data = (struct gps_gll_t*)sentence_data;
+            // Parse GLL sentence and populate gll_data
+            // ...
+            break;
+        }
+    }
+
+    // ... Rest of your parsing logic ...
+
+    // Free allocated memory when done
+    free(sentence_data);
+}
+
+int main() {
+    const char* gga_sentence = "$GPGGA,002153.000,3342.6618,N,11751.3858,W,1,10,1.2,27.0,M,-34.2,M,,0000*5E";
+    const char* gll_sentence = "$GPGLL,3342.6618,N,11751.3858,W,002153.000,A*2D";
+
+    // Assuming you can determine the sentence type based on its format
+    parse_gga_sentence(gga_sentence, GGA);
+    parse_gga_sentence(gll_sentence, GLL);
+
+    return 0;
+}
 struct gps_instance_t
 {
   int last_msg_type;
