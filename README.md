@@ -12,7 +12,7 @@ The `test` folder contains unit tests.
 The unit tests can built and run as follows:
 ```
 $ cd tests
-$ cc unity.c test_checksum.c ../crc.c -I .. -o test_checksum.out -g
+$ cc unity.c test_checksum.c ../*.c -I .. -o test_checksum.out -g
 ```
 Above example builds the `test_checksum` unit test. It can be run as follows:
 ```
