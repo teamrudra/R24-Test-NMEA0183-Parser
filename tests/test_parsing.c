@@ -26,7 +26,7 @@ void test_geoid_seperation(void) {
   TEST_ASSERT_EQUAL(GPS_NO_ERROR, gps_update(handle, examples[0], strlen(examples[0])));
   float geoid_sep;
   gps_get_geoid_sep(handle, &geoid_sep);
-  TEST_ASSERT_EQUAL(-34.2, geoid_sep);
+ TEST_ASSERT_FLOAT_WITHIN(0.001, -34.2, geoid_sep);
 }
 void test_gll_parsing_over_examples(void) {
   const char* examples[] = {
