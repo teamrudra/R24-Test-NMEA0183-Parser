@@ -12,6 +12,8 @@ typedef enum {
   GPS_NO_TIME = 33,
   GPS_NO_FIX_TYPE = 34,
 } gps_error_code_t;
+gps_t gps_init();
+gps_error_code_t gps_destroy(gps_t gps_instance);
 gps_error_code_t gps_update(gps_t gps_instance, const char* sentence, int len);
 gps_error_code_t gps_get_lat_lon(gps_t gps_instance, int* degmin, int* minfrac);
 gps_error_code_t gps_get_time(gps_t gps_instance, struct tm* time);

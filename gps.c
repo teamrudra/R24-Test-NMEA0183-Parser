@@ -51,11 +51,19 @@ int next_field(const char* sentence, int len, int offset) {
   }
   return -1;
 }
+gps_t gps_init() {
+  struct gps_instance_t* var = calloc(1, sizeof(struct gps_instance_t));
+  return var;
+}
+gps_error_code_t gps_destroy(gps_t gps_instance) {
+  free(gps_instance);
+  return GPS_NO_ERROR;
+}
 gps_error_code_t gps_update(gps_t gps_instance, const char* sentence, int len) {
   if (verify_checksum(sentence, len) == 0) return GPS_INVALID_CHECKSUM;
   int current_sentence = SENTENCE_UNKNOWN;
   for (int i = 0; i < SENTENCE_UNKNOWN; i++) {
-    if (strncmp(sentence+2, sentence_prefix[i], 3) == 0) {
+    if (strncmp(sentence+3, sentence_prefix[i], 3) == 0) {
       current_sentence = i;
       break;
     }
@@ -79,6 +87,14 @@ gps_error_code_t gps_get_time(gps_t gps_instance, struct tm* time) {
 }
 gps_error_code_t gps_get_altitude(gps_t gps_instance, float* msl_metres) {
   return GPS_UNIMPLEMENTED;
+}
+gps_error_code_t gga_get_lat_lon(int* degmin, int* minfrac) {
+  degmin[0] = (int) gga.lat;
+  minfrac[0] = (int) ((gga.lat - degmin[0])*10000);
+  
+  degmin[1] = (int) gga.lon;
+  minfrac[1] = (int) ((gga.lon - degmin[1])*10000);
+  return GPS_NO_ERROR;
 }
 gps_error_code_t parse_gga(gps_t gps_instance, const char* sentence, int len) {
   gps_instance->last_msg_type = SENTENCE_GGA;
@@ -137,6 +153,9 @@ gps_error_code_t parse_gga(gps_t gps_instance, const char* sentence, int len) {
     fieldc++;
   }
   return GPS_NO_ERROR;
+}
+gps_error_code_t gll_get_lat_lon(int* degmin, int* minfrac) {
+  return GPS_UNIMPLEMENTED;
 }
 gps_error_code_t parse_gll(gps_t gps_instance, const char* sentence, int len) {
   gps_instance->last_msg_type = SENTENCE_GLL;
